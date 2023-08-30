@@ -1,0 +1,19 @@
+/*** SATISFIABLE ***/
+infile_201      {p: T, r: F}                    p | q -> p & !r
+infile_202      {p: T, r: T}                    p | q -> !(p&!r)
+infile_203      {p: F}                          !p & (p | q)
+infile_204      {p: T, q: T, s: T}              p & (q|r) & s
+infile_205      {p1: T, p2: T, p3: F}           (p1 -> p2) | !p3
+infile_206      {p: T, q: T, r: T}              p & (!p | q) & (r | !q | s) & (r | !s)                  L3-S45
+infile_207      {p: F, q: F, r: T}              (!p | q | r) & (!q | r) & (!q | !r) & (p | !q | !r)     L3-S49
+infile_208      {p: T}                          p
+infile_209      {p: T, q: T, r: T}              (p -> q) & (q->r) -> (p->r)                             COC-Ex-1.8
+infile_210      {ALL}                           p <-> !!p                                               COC-Ex-1.11
+infile_211      {ALL}                           p -> q <-> !p | q                                       COC-Ex-1.12
+infile_212      {p: T, q: F}                    p & q -> !p | !q
+
+/*** UNSATISFIABLE ***/
+infile_101      p & !p
+infile_102      p <-> !p
+infile_103      (p->q) & p & !q
+infile_104      (p & q) & (!p & (q | !r)) 
