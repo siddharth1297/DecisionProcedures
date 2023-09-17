@@ -105,7 +105,7 @@ static int toDimacs(node_t *tsetinNode, char *fileName) {
   FILE *file = fopen(fileName, "w");
   initVarList(tsetinNode);
   clauses = countOpTypeNode(tsetinNode, node_type_and) + 1;
-  fprintf(file, "p cnf %d %d\n", clauses, variables);
+  fprintf(file, "p cnf %d %d\n", variables, clauses);
   int lineEnded = 1;
   dumpCNF(tsetinNode, file, &lineEnded);
   //assert(lineEnded == 1);
