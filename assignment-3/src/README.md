@@ -10,8 +10,7 @@ $ ./main test/1.txt
 
 ### Development Steps
 - [x] Generate AST
-- [ ] Generate DAG from AST
-- [ ] Apply Union-Find
+- [x] Generate DAG from AST
 - [ ] Apply Union-Find
 - [ ] Check against negation or not equal
 - [ ] Add New test cases

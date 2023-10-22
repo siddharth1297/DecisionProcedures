@@ -5,6 +5,9 @@
 
 #include "fe_driver.hpp"
 
+#include "dag.hpp"
+#include "dag_builder.hpp"
+
 using namespace std;
 
 int main(const int argc, const char **argv) {
@@ -29,5 +32,11 @@ int main(const int argc, const char **argv) {
   assert(ast->root_);
   cout << "Parse Tree" << std::endl << *(ast) << endl;
   cout << "Parsed Tree To Formula" << std::endl << ast->ToFormula() << endl;
+  cout << "---------------Building DAG---------------" << endl;
+  Dag *dag = DagBuilder::BuildDag(ast);
+  // cout << DagBuilder::SubFormulaeToStr() << std::endl;
+  // cout << dag << endl;
+  delete dag;
+  delete ast;
   return (EXIT_SUCCESS);
 }

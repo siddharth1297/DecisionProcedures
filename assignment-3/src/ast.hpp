@@ -45,6 +45,11 @@ public:
       : type_(node_type_func), func_name_(func_name), is_pred_(is_pred),
         children_(args) {}
 
+  ~Node() {
+    for (auto &child : children_) {
+      delete child;
+    }
+  }
   friend ostream &operator<<(ostream &os, const Node *node) {
     if (node == nullptr) {
       os << "{}";
@@ -54,31 +59,71 @@ public:
     return os;
   }
   friend ostream &operator<<(ostream &os, const Node &node) {
-    os << "{";
-    if (isNodeTypeOp(node.type_))
-      os << opToStr[node.type_];
-    else if (node.type_ == node_type_var)
-      os << node.var_name_;
-    else if (node.type_ == node_type_func)
-      os << node.func_name_;
-    else
-      assert(false);
-    os << "}";
+    os << "{" << node.ToStr() << "}";
     return os;
   }
 
-  std::string ToFormula() {
-    std::stringstream ss;
+  std::string ToStr() const {
     if (type_ == node_type_func) {
-      ss << func_name_;
-    } else if (type_ == node_type_var) {
-      ss << var_name_;
-    } else if (isNodeTypeOp(type_)) {
-      ss << opToStr[type_];
-    } else {
-      NOT_IMPLEMENTED;
+      return func_name_;
     }
+    if (type_ == node_type_var) {
+      return var_name_;
+    }
+    if (isNodeTypeOp(type_)) {
+      return opToStr[type_];
+    }
+
+    NOT_IMPLEMENTED;
+  }
+
+  std::string ToFormula() const {
+    std::stringstream ss;
+    ToFormula(ss);
     return ss.str();
+  }
+
+  void ToFormula(std::stringstream &ss) const {
+    if (type_ == node_type_var) {
+      ss << ToStr();
+      assert(children_.empty());
+      return;
+    }
+
+    if (type_ == node_type_func) {
+      ss << ToStr();
+      assert(!children_.empty());
+      ss << "(";
+      for (size_t i = 0; i < children_.size(); i++) {
+        children_[i]->ToFormula(ss);
+        if (i + 1 < children_.size()) {
+          ss << ",";
+        }
+      }
+      ss << ")";
+      return;
+    }
+    assert(isNodeTypeOp(type_));
+    if (type_ == node_type_not) {
+      assert(children_.size() == 1);
+      ss << ToStr();
+      children_[0]->ToFormula(ss);
+      return;
+    }
+    if (type_ != node_type_not) {
+      assert(children_.size() == 2);
+      children_[0]->ToFormula(ss);
+      ss << " " << ToStr() << " ";
+      children_[1]->ToFormula(ss);
+      return;
+    }
+    std::cerr << this << std::endl;
+    NOT_IMPLEMENTED;
+  }
+
+  inline std::string GetName() const {
+    assert(type_ == node_type_var || type_ == node_type_func);
+    return type_ == node_type_var ? var_name_ : func_name_;
   }
   node_type_t type_; // Type of the node
   string func_name_; // name of the (sub)function, set only if it
@@ -92,6 +137,7 @@ class Ast {
 public:
   Ast() = delete;
   Ast(Node *root) : root_(root) {}
+  ~Ast() { delete root_; }
   Node *root_ = nullptr;
   friend ostream &operator<<(ostream &os, const Ast &ast) {
     os << "--------------------------------------" << endl;
@@ -127,49 +173,8 @@ public:
 
   std::string ToFormula() {
     std::stringstream ss;
-    ToFormula(root_, ss);
+    root_->ToFormula(ss);
     return ss.str();
-  }
-
-private:
-  void ToFormula(Node *root, std::stringstream &ss) {
-    if (!root)
-      return;
-    if (root->type_ == node_type_var) {
-      ss << root->ToFormula();
-      assert(root->children_.empty());
-      return;
-    }
-
-    if (root->type_ == node_type_func) {
-      ss << root->ToFormula();
-      assert(!root->children_.empty());
-      ss << "(";
-      for (size_t i = 0; i < root->children_.size(); i++) {
-        ToFormula(root->children_[i], ss);
-        if (i + 1 < root->children_.size()) {
-          ss << ",";
-        }
-      }
-      ss << ")";
-      return;
-    }
-    assert(isNodeTypeOp(root->type_));
-    if (root->type_ == node_type_not) {
-      assert(root->children_.size() == 1);
-      ss << root->ToFormula();
-      ToFormula(root->children_[0], ss);
-      return;
-    }
-    if (root->type_ != node_type_not) {
-      assert((root->children_.size() == 2));
-      ToFormula(root->children_[0], ss);
-      ss << " " << root->ToFormula() << " ";
-      ToFormula(root->children_[1], ss);
-      return;
-    }
-    std::cerr << root << std::endl;
-    NOT_IMPLEMENTED;
   }
 };
 
