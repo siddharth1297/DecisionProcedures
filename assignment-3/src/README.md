@@ -17,7 +17,8 @@ $ ./main test/1.txt
 
 ### Reference
 The C++ lex/bison is reffered(almost copied & renamed) from: [FLEX AND BISON IN C++](http://www.jonathanbeard.io/tutorials/FlexBisonC++.html)
-
+[Print container in custom format](https://stackoverflow.com/questions/4077609/overloading-output-stream-operator-for-vectort)
+[Hash function for unordered containers](https://marknelson.us/posts/2011/09/03/hash-functions-for-c-unordered-containers.html)
 
 ### TODO: Doubts
 1. Confirm the precesion and associativity of "=" & "!="?
