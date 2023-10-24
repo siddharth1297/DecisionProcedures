@@ -27,7 +27,6 @@ public:
    * @return: Created Dag object
    */
   static Dag *BuildDag(const Ast *ast) {
-    Dag *dag = new Dag();
     DagBuilder *builder = new DagBuilder();
     builder->GenerateSubFormulae(ast->root_);
     builder->GatherEqualityConstraints(ast->root_);
@@ -42,6 +41,9 @@ public:
       std::cout << sf->ToFormula() << "\n" << sf->DagIDView() << std::endl;
     }
     std::cout << "=============================" << std::endl;
+    Dag *dag = new Dag(builder->sub_formulae_, builder->sub_formulae_equality_,
+                       builder->sub_formulae_inequality_);
+    delete builder;
     return dag;
   }
 
@@ -108,7 +110,11 @@ private:
       // Child must be available as we have already covered the children
       assert(ast_fun_dag_node_map_.find(ast_node->children_[i]) !=
              ast_fun_dag_node_map_.end());
-      dag_node->AddChild(ast_fun_dag_node_map_[ast_node->children_[i]]);
+      auto child_dag_node = ast_fun_dag_node_map_[ast_node->children_[i]];
+      dag_node->args_.push_back(child_dag_node->GetId());
+      dag_node->n_args_++;
+      child_dag_node->ccpar_.push_back(dag_node->GetId());
+      dag_node->AddChild(child_dag_node);
     }
     return true;
   }
@@ -172,8 +178,8 @@ private:
     if (root->type_ == node_type_equal) {
       assert(root->children_.size() == 2);
 
-      sub_formulae_equality_.push_back(DiscoverDagNode(root->children_[0]));
-      sub_formulae_equality_.push_back(DiscoverDagNode(root->children_[1]));
+      sub_formulae_equality_.push_back({DiscoverDagNode(root->children_[0]),
+                                        DiscoverDagNode(root->children_[1])});
     }
     for (size_t i = 0; i < root->children_.size(); i++)
       GatherEqualityConstraints(root->children_[i]);
@@ -189,8 +195,9 @@ private:
       return;
     if (root->type_ == node_type_not_equal) {
       assert(root->children_.size() == 2);
-      sub_formulae_inequality_.push_back(DiscoverDagNode(root->children_[0]));
-      sub_formulae_inequality_.push_back(DiscoverDagNode(root->children_[1]));
+
+      sub_formulae_inequality_.push_back({DiscoverDagNode(root->children_[0]),
+                                          DiscoverDagNode(root->children_[1])});
     }
     for (size_t i = 0; i < root->children_.size(); i++)
       GatherInEqualityConstraints(root->children_[i]);
@@ -199,8 +206,8 @@ private:
   DagBuilder() {}
 
   std::vector<DagNode *> sub_formulae_;
-  std::vector<DagNode *> sub_formulae_equality_;
-  std::vector<DagNode *> sub_formulae_inequality_;
+  std::vector<std::pair<DagNode *, DagNode *>> sub_formulae_equality_;
+  std::vector<std::pair<DagNode *, DagNode *>> sub_formulae_inequality_;
   std::unordered_map<const Node *, DagNode *> ast_fun_dag_node_map_;
   std::unordered_map<std::string, DagNode *> ast_node_dag_node_map_;
   Dag *dag_ = nullptr;

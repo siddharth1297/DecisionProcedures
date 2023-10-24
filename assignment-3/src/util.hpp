@@ -1,6 +1,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+#include <algorithm>
 #include <unordered_set>
 #include <vector>
 
@@ -39,4 +40,19 @@ std::ostream &operator<<(std::ostream &os, const std::vector<T> &s) {
   return os;
 }
 
+template <class T>
+std::ostream &operator<<(std::ostream &os, const std::pair<T, T> &p) {
+  os << "[" << p.first << ", " << p.second << "]";
+  return os;
+}
+
+template <class T>
+std::vector<int> VectorSetUnion(const std::vector<T> &v1,
+                                const std::vector<T> &v2) {
+  std::vector<int> out(v1.size() + v2.size());
+  auto it =
+      std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(), out.begin());
+  out.resize(it - out.begin());
+  return out;
+}
 #endif

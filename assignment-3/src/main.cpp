@@ -34,8 +34,7 @@ int main(const int argc, const char **argv) {
   cout << "Parsed Tree To Formula" << std::endl << ast->ToFormula() << endl;
   cout << "---------------Building DAG---------------" << endl;
   Dag *dag = DagBuilder::BuildDag(ast);
-  // cout << DagBuilder::SubFormulaeToStr() << std::endl;
-  // cout << dag << endl;
+  std::cout << (dag->Decision() ? "SAT" : "UNSAT") << std::endl;
   delete dag;
   delete ast;
   return (EXIT_SUCCESS);

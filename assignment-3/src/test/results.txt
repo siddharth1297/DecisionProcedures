@@ -1,0 +1,14 @@
+file            result
+-------------------------
+1.txt           UNSAT
+2.txt           UNSAT
+3.txt           SAT
+4.txt           UNSAT
+5.txt           UNSAT
+6.txt           SAT
+7.txt           UNSAT
+8.txt           Syntax Error: f has different signature
+
+class_slide_1   SAT
+class_slide_2   UNSAT
+class_slide_3   SAT

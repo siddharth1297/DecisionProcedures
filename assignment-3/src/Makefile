@@ -2,7 +2,7 @@ CC    ?= clang
 CXX   ?= clang++
 
 OPT = -g -O0
-#OPT = -O3
+OPT = -O3
 
 EXE = main
 
@@ -11,7 +11,7 @@ CDEBUG = -Wall
 CXXDEBUG = -Wall
 
 CSTD = -std=c11
-CXXSTD = -std=c++14
+CXXSTD = -std=c++17
 
 CFLAGS = $(OPT) $(CDEBUG) $(CSTD) 
 CXXFLAGS = $(OPT) $(CXXDEBUG) $(CXXSTD)
