@@ -248,7 +248,7 @@ private:
     }
     int n_args = nodei->n_args_;
     for (int i = 0; i < n_args; i++) {
-      if (Find(nodei->args_[i] != Find(nodej->args_[i]))) {
+      if (Find(nodei->args_[i]) != Find(nodej->args_[i])) {
         return 0;
       }
     }
